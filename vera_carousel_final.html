@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vera · Instagram Carousel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --lime: #b8f040;
+    --white: #ffffff;
+    --font: 'Inter', sans-serif;
+    --W: 486px;
+    --H: 608px;
+  }
+
+  body {
+    background: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 48px;
+    min-height: 100vh;
+    font-family: var(--font);
+  }
+
+  .page-title {
+    color: rgba(255,255,255,0.28);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* ── CAROUSEL ── */
+  .carousel-wrap { position: relative; width: var(--W); }
+
+  .track {
+    width: var(--W);
+    display: flex;
+    overflow: hidden;
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+
+  /* ── BASE SLIDE ── */
+  .slide {
+    flex: 0 0 var(--W);
+    width: var(--W);
+    height: var(--H);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── DARK BG ── */
+  .bg-dark {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 80% 0%,   #4a8a30 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 10% 100%,  #0a1f10 0%, transparent 60%),
+      linear-gradient(160deg, #2a5c28 0%, #1a3d25 35%, #0d2a18 70%, #071510 100%);
+  }
+
+  /* ── LIGHT BG ── */
+  .bg-light {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 15% 0%,   #d4ecd4 0%, transparent 55%),
+      radial-gradient(ellipse 80% 60% at 90% 100%,  #b8d8cc 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 80% 10%,   #cce8e0 0%, transparent 50%),
+      linear-gradient(160deg, #ddeedd 0%, #c8e0d4 40%, #b8cfc8 100%);
+  }
+
+  /* ── INNER ── */
+  .slide-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 26px 28px 22px;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .label-dark {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--lime);
+    white-space: nowrap;
+  }
+
+  .label-light {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1a5030;
+    white-space: nowrap;
+  }
+
+  .divider {
+    flex: 1;
+    height: 1px;
+    margin: 0 11px;
+  }
+  .divider-dark  { background: rgba(255,255,255,0.18); }
+  .divider-light { background: rgba(26,80,48,0.2); }
+
+  .counter-dark  { font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; color: var(--lime); opacity: 0.75; white-space: nowrap; }
+  .counter-light { font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; color: #1a5030; opacity: 0.7; white-space: nowrap; }
+
+  /* ── HEADLINES ── */
+  .h-dark {
+    font-weight: 900;
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+  .h-light {
+    font-weight: 900;
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    color: #0d1a10;
+  }
+  .h-xl  { font-size: 58px; margin-bottom: 14px; }
+  .h-lg  { font-size: 46px; margin-bottom: 14px; }
+  .h-cta { font-size: 50px; margin-bottom: 20px; }
+
+  .lime-text   { color: var(--lime); }
+  .green-text  { color: #1a5030; }
+  .yellow-text { color: #ffe566; }
+
+  /* ── BODY ── */
+  .body-dark   { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.65); line-height: 1.58; }
+  .body-light  { font-size: 13px; font-weight: 400; color: rgba(13,26,16,0.62);    line-height: 1.58; }
+  .bold-dark   { font-size: 13px; font-weight: 700; color: #fff;    line-height: 1.45; margin-bottom: 8px; }
+  .bold-light  { font-size: 13px; font-weight: 700; color: #0d1a10; line-height: 1.45; margin-bottom: 8px; }
+
+  /* ── ILLUS BOX ── */
+  .illus {
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .illus-dark  { border: 1.5px dashed rgba(255,255,255,0.13); background: rgba(255,255,255,0.03); }
+  .illus-light { border: 1.5px dashed rgba(13,61,30,0.13);    background: rgba(13,61,30,0.03); }
+  .illus-lbl-dark  { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+  .illus-lbl-light { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(13,61,30,0.22); }
+
+  /* ── WHITE CARD ── */
+  .card {
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    padding: 2px 16px 8px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+  .table-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(13,26,16,0.07);
+  }
+  .table-row:last-child { border-bottom: none; }
+  .row-lbl { font-size: 12.5px; font-weight: 400; color: rgba(13,26,16,0.58); }
+  .row-val { font-size: 12.5px; font-weight: 500; color: rgba(13,26,16,0.68); }
+  .row-total-lbl { font-size: 13.5px; font-weight: 700; color: #0d1a10; }
+  .row-total-val { font-size: 17px;   font-weight: 800; color: #0d1a10; }
+
+  /* ── CTA LIST ── */
+  .cta-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+  .cta-row  { display: flex; align-items: flex-start; gap: 11px; }
+  .cta-icon {
+    width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.13);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cta-main { font-size: 13.5px; font-weight: 700; color: #fff; }
+  .cta-sub  { font-size: 11.5px; font-weight: 400; color: rgba(255,255,255,0.42); margin-top: 2px; line-height: 1.45; }
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar {
+    margin-top: auto;
+    padding-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .arrow-pill {
+    width: 76px; height: 34px; border-radius: 100px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .arrow-pill:hover { opacity: 0.75; }
+  .arrow-dark  { background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.17); }
+  .arrow-light { background: rgba(255,255,255,0.55); border: 1px solid rgba(13,26,16,0.12); }
+
+  .vera-dark  { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; color: #fff; }
+  .vera-light { font-size: 26px; font-weight: 800; letter-spacing: -0.04em; color: #0d1a10; }
+
+  /* ── NAV ── */
+  .dots {
+    display: flex; gap: 7px; justify-content: center; margin-top: 18px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 3px;
+    background: rgba(255,255,255,0.2); cursor: pointer; transition: all 0.3s;
+  }
+  .dot.active { background: var(--lime); width: 22px; }
+
+  .nav-row {
+    display: flex; gap: 10px; justify-content: center; margin-top: 12px;
+  }
+  .nav-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.16); background: transparent;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.08); }
+
+  .slide-num {
+    text-align: center; margin-top: 9px;
+    font-size: 11px; font-weight: 500;
+    color: rgba(255,255,255,0.22); letter-spacing: 0.08em;
+  }
+
+  /* spacer utility */
+  .mt-auto { margin-top: auto; }
+  .mb-12   { margin-bottom: 12px; }
+  .mb-10   { margin-bottom: 10px; }
+  .mb-6    { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<p class="page-title">Vera · Instagram Carousel</p>
+
+<div class="carousel-wrap">
+  <div class="track" id="track">
+
+    <!-- ─── S1: Cover Dark ─── -->
+    <div class="slide">
+      <div class="bg-dark"></div>
+      <div class="slide-inner">
+        <div class="top-bar">
+          <span class="label-dark">VERA · 90 SEC READ</span>
+        </div>
+        <div class="h-dark h-xl">
+          The<br>50/30/20<br>rule is <span class="lime-text">dead.</span>
+        </div>
+        <div class="body-dark mb-12">Here's what actually works.</div>
+        <div class="illus illus-dark mt-auto mb-12" style="height:200px;">
+          <span class="illus-lbl-dark">[3D Illustration / Hero Image]</span>
+        </div>
+        <div class="bottom-bar">
+          <div class="arrow-pill arrow-dark" onclick="next()">
+            <svg width="30" height="11" viewBox="0 0 30 11" fill="none"><path d="M0 5.5h26M21 1l5 4.5-5 4.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="vera-dark">vera</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── S2: Cover Light ─── -->
+    <div class="slide">
+      <div class="bg-light"></div>
+      <div class="slide-inner">
+        <div class="top-bar">
+          <span class="label-light">VERA · 90 SEC READ</span>
+        </div>
+        <div class="h-light h-xl">
+          The<br>50/30/20<br>rule is <span class="green-text">dead.</span>
+        </div>
+        <div class="body-light mb-12">Here's what actually works.</div>
+        <div class="illus illus-light mt-auto mb-12" style="height:200px;">
+          <span class="illus-lbl-light">[3D Illustration / Hero Image]</span>
+        </div>
+        <div class="bottom-bar">
+          <div class="arrow-pill arrow-light" onclick="next()">
+            <svg width="30" height="11" viewBox="0 0 30 11" fill="none"><path d="M0 5.5h26M21 1l5 4.5-5 4.5" stroke="#0d1a10" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="vera-light">vera</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── S3: Rule #01 Dark ─── -->
+    <div class="slide">
+      <div class="bg-dark"></div>
+      <div class="slide-inner">
+        <div class="top-bar">
+          <span class="label-dark">THE REAL RULE #01</span>
+          <div class="divider divider-dark"></div>
+          <span class="counter-dark">02 / 05</span>
+        </div>
+        <div class="h-dark h-lg">Know your<br>numbers</div>
+        <div class="bold-dark">The best budget is the one you'll actually stick to.</div>
+        <div class="body-dark">Most people never see their full spending picture in one place. Vera puts every account, every bill, every goal on a single screen.</div>
+        <div class="illus illus-dark mt-auto mb-12" style="height:140px;">
+          <span class="illus-lbl-dark">[3D Illustration]</span>
+        </div>
+        <div class="bottom-bar">
+          <div class="arrow-pill arrow-dark" onclick="next()">
+            <svg width="30" height="11" viewBox="0 0 30 11" fill="none"><path d="M0 5.5h26M21 1l5 4.5-5 4.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="vera-dark">vera</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── S4: Rule #02 Light (card style) ─── -->
+    <div class="slide">
+      <div class="bg-light"></div>
+      <div class="slide-inner">
+        <div class="top-bar">
+          <span class="label-light">STEP 1 — CALCULATE</span>
+          <div class="divider divider-light"></div>
+          <span class="counter-light">03 / 05</span>
+        </div>
+        <div class="h-light h-lg">Find your<br><span class="green-text">monthly floor</span></div>
+        <div class="body-light mb-6">Housing + food + utilities + transportation + minimums on debt = your monthly floor. Multiply by 6 = your target.</div>
+        <div class="bold-light">Most people have never actually done this math.</div>
+        <div class="card mt-auto" style="margin-bottom:10px;">
+          <div class="table-row"><span class="row-lbl">Housing</span><span class="row-val">$1,800</span></div>
+          <div class="table-row"><span class="row-lbl">Food</span><span class="row-val">$600</span></div>
+          <div class="table-row"><span class="row-lbl">Utilities</span><span class="row-val">$200</span></div>
+          <div class="table-row"><span class="row-lbl">Transportation</span><span class="row-val">$300</span></div>
+          <div class="table-row"><span class="row-lbl">Debt minimums</span><span class="row-val">$500</span></div>
+          <div class="table-row"><span class="row-total-lbl">Monthly floor × 6</span><span class="row-total-val">$20,400</span></div>
+        </div>
+        <div class="bottom-bar">
+          <div class="arrow-pill arrow-light" onclick="next()">
+            <svg width="30" height="11" viewBox="0 0 30 11" fill="none"><path d="M0 5.5h26M21 1l5 4.5-5 4.5" stroke="#0d1a10" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="vera-light">vera</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── S5: Rule #03 Dark ─── -->
+    <div class="slide">
+      <div class="bg-dark"></div>
+      <div class="slide-inner">
+        <div class="top-bar">
+          <span class="label-dark">THE REAL RULE #03</span>
+          <div class="divider divider-dark"></div>
+          <span class="counter-dark">04 / 05</span>
+        </div>
+        <div class="h-dark h-lg">Adapt as<br>life changes</div>
+        <div class="bold-dark">Real life isn't a rigid percentage rule.</div>
+        <div class="body-dark">Vera adjusts as your income, goals, and bills shift — so the number you see today is the right number for today.</div>
+        <div class="illus illus-dark mt-auto mb-12" style="height:140px;">
+          <span class="illus-lbl-dark">[3D Illustration]</span>
+        </div>
+        <div class="bottom-bar">
+          <div class="arrow-pill arrow-dark" onclick="next()">
+            <svg width="30" height="11" viewBox="0 0 30 11" fill="none"><path d="M0 5.5h26M21 1l5 4.5-5 4.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="vera-dark">vera</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── S6: CTA Dark ─── -->
+    <div class="slide">
+      <div class="bg-dark"></div>
+      <div class="slide-inner">
+        <div class="top-bar">
+          <span class="label-dark">YOUR TURN</span>
+        </div>
+        <div class="h-dark h-cta">
+          Which<br>Budgeting<br>method are<br><span class="yellow-text">you</span> using?
+        </div>
+        <div class="cta-list">
+          <div class="cta-row">
+            <div class="cta-icon">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <rect x="1" y="1" width="11" height="8" rx="2" stroke="rgba(255,255,255,0.6)" stroke-width="1.2"/>
+                <path d="M4 12h5M6.5 9v3" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div><div class="cta-main">Vote in the comments ↓</div></div>
+          </div>
+          <div class="cta-row">
+            <div class="cta-icon">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M2 12.5h9M6.5 1v9M2.5 5.5l4-4 4 4" stroke="rgba(255,255,255,0.6)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="cta-main">Save this</div>
+              <div class="cta-sub">Share with someone still using the 50/30/20 rule like it's gospel.</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <div class="arrow-pill arrow-dark" onclick="prev()">
+            <svg width="30" height="11" viewBox="0 0 30 11" fill="none"><path d="M30 5.5H4M9 1L4 5.5 9 10" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="vera-dark">vera</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /track -->
+
+  <div class="dots" id="dots">
+    <div class="dot active" onclick="goTo(0)"></div>
+    <div class="dot" onclick="goTo(1)"></div>
+    <div class="dot" onclick="goTo(2)"></div>
+    <div class="dot" onclick="goTo(3)"></div>
+    <div class="dot" onclick="goTo(4)"></div>
+    <div class="dot" onclick="goTo(5)"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" onclick="prev()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M10 6.5H3M6.5 3L3 6.5l3.5 3.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-btn" onclick="next()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 6.5h7M6.5 3l3.5 3.5-3.5 3.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+
+  <p class="slide-num" id="slideNum">1 / 6</p>
+</div>
+
+<script>
+  let cur = 0;
+  const total = 6;
+  const track = document.getElementById('track');
+  const dots  = document.querySelectorAll('.dot');
+  const num   = document.getElementById('slideNum');
+  const W     = 486;
+
+  function goTo(n) {
+    cur = (n + total) % total;
+    track.scrollTo({ left: W * cur, behavior: 'smooth' });
+    dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+    num.textContent = (cur + 1) + ' / ' + total;
+  }
+
+  function next() { goTo(cur + 1); }
+  function prev() { goTo(cur - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') next();
+    if (e.key === 'ArrowLeft')  prev();
+  });
+</script>
+</body>
+</html>
